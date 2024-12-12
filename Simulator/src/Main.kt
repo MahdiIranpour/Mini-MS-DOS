@@ -1,9 +1,9 @@
-
 import java.io.File
+import kotlin.system.exitProcess
 
-fun main(){
+fun main() {
 
-    var comm : String
+    var comm: String
     var parts: Array<String>
     while (true) {
 
@@ -11,35 +11,76 @@ fun main(){
 
         parts = comm.split(" ").toTypedArray()
 
-        when (parts[0]) {
+        when (parts[0].uppercase()) {
 
-            "CF" -> {     //Create file
-                create_file(parts[1])
+            "CF" -> {   //Create file
+                createFile(parts[1])
             }
 
-            "CFN" ->{}  //Change file name
+            "CFN" -> {   //Change file name
+                changeFileName(parts[1], parts[2])
+            }
 
-            "RMF" ->{} //Remove file
+            "RMF" -> {   //Remove file
+                removeFile(parts[1])
+            }
+
+            "EXIT" -> {
+                exit()
+            }
         }
 
     }
 }
 
-fun create_file( name : String) {
 
-    val res = create_and_get_path(name)
+fun exit() {
+    println("Bye!")
+    exitProcess(0)
+}
 
-    if (res.isNotEmpty()){
+fun removeFile(fileName: String) {
+
+    val file = File(fileName)
+
+    if (file.exists()) {
+        if (file.delete())
+            println("file $file removed successfully")
+        else
+            println("failed to delete $file")
+    } else
+        println("file $file does not exist")
+}
+
+fun changeFileName(current_name: String, target_name: String) {
+
+    val file = File(current_name)
+
+    if (file.exists().not()) {
+        println("file $file does not exists")
+        return
+    }
+
+    if (file.renameTo(File(target_name)))
+        println("file $current_name renamed to $target_name")
+}
+
+fun createFile(name: String) {
+
+    val res = createAndGetPath(name)
+
+    if (res.isNotEmpty()) {
         println("file $name is created in $res")
-    } else{
+    } else {
         println("failed to create file $name")
     }
 
     return
 }
 
-fun create_and_get_path(name: String): String {
+fun createAndGetPath(name: String): String {
     val file = File(name)
+    file.createNewFile()
     return file.canonicalPath
 }
 
