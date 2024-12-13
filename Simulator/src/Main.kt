@@ -1,8 +1,10 @@
 import java.io.File
+import java.nio.file.Files
 import kotlin.system.exitProcess
+import java.nio.file.attribute.BasicFileAttributes
+import java.time.format.DateTimeFormatter
 
-
-var currentDirectory = File("C:")
+var currentDirectory = File("C:\\Users\\Laptopkaran")
 
 fun main() {
 
@@ -11,26 +13,34 @@ fun main() {
 
     while (true) {
 
+        print("$currentDirectory>")
         comm = readln()
 
         parts = comm.split(" ").toTypedArray()
 
         when (parts[0].uppercase()) {
 
-            "CF" -> {   //Create file
+            "ECHO." -> {   //Create file
                 createFile(parts[1])
             }
 
-            "CFN" -> {   //Change file name
+            "REN" -> {   //Change file name
                 changeFileName(parts[1], parts[2])
             }
 
-            "RMF" -> {   //Remove file
+            "DEL" -> {   //Remove file
                 removeFile(parts[1])
             }
 
-            "CDIR" -> { //Change current directory
-                changeDirectory(parts[1])
+            "CD" -> {   //work with current directory
+                if(parts.size > 1)
+                    changeDirectory(parts[1])
+                else
+                    changeDirectory("")
+            }
+
+            "DIR" -> {  //show files in current directory
+                showCurrentDirectory()
             }
 
             "EXIT" -> {
@@ -39,10 +49,16 @@ fun main() {
 
 
             "HELP" -> {
-                println("CF - Create a new file => CF 'path_to_the_file'")
-                println("CFN - Change file name or format => CFN 'path_to_the_file' 'target_name/format'")
-                println("RMF - Remove file => RMF 'path_to_the_file'")
-
+                println("echo. - Create a new file => echo. 'path to the file'")
+                println("ren - Change file name or format => ren 'path to the file' 'target name/format'")
+                println("del - Remove file => del 'path_to_the_file'")
+                println("cd : for showing current directory => cd")
+                println("for change current directory to a specific folder => cd 'folder name'")
+                println("for change current directory to parent directory => cd ..")
+                println("for change current directory to absolute path => cd 'absolute path to the folder'")
+                println("back to root directory on current drive => cd \\")
+                println("'Drive name' to change current drive => E:")
+                println("dir - get List of files in current directory")
                 println("EXIT - Exit the terminal")
             }
 
@@ -51,20 +67,79 @@ fun main() {
             }
         }
 
+        println()
     }
+}
+
+fun showCurrentDirectory() {
+
+    val files = currentDirectory.listFiles()
+
+    for (file in files!!){
+        printFile(file)
+    }
+}
+
+fun printFile(file: File) {
+
+    val path = file.toPath()
+
+    val attributes = path.let {
+        Files.readAttributes(it, BasicFileAttributes::class.java)
+    }
+
+    val creationTime = attributes?.creationTime()?.toInstant()
+    val formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy  HH:mm:ss")
+    val formattedTime = formatter.format(creationTime?.atZone(java.time.ZoneId.systemDefault()))
+
+    val directoryOrFile = if (file.isDirectory) "<DIR>" else "    "
+
+    val size = attributes.size()
+
+    if (size.toString().length <= 4)
+        println("$formattedTime     $directoryOrFile    $size \t\t${file.name}")
+    else
+        println("$formattedTime     $directoryOrFile    $size \t${file.name}")
 }
 
 fun changeDirectory(targetDir: String) {
 
-    val file = File(targetDir)
+    if (targetDir == ".."){
+        currentDirectory = currentDirectory.parentFile
+        return
+    } else if (targetDir == "\\"){
 
-    if (file.exists() and file.isDirectory){
+        val drive = currentDirectory.absolutePath.substring(0, 2) // for example D:
+        currentDirectory = File("$drive/")
 
-        currentDirectory = file
-        println("Current directory changed to $currentDirectory")
+    } else if(targetDir.isBlank()) {
+        println("$currentDirectory")
+
+    }else if(!targetDir.contains(":")){
+
+        val file = File("$currentDirectory\\$targetDir")
+
+        if (file.exists() and file.isDirectory) {
+
+            currentDirectory = file
+            println("Current directory changed to $currentDirectory")
+
+        } else {
+            println("$file does not or it is not a directory")
+        }
 
     } else {
-        println("$file does not or it is not a directory")
+
+        val file = File(targetDir)
+
+        if (file.exists() and file.isDirectory) {
+
+            currentDirectory = file
+            println("Current directory changed to $currentDirectory")
+
+        } else {
+            println("$file does not or it is not a directory")
+        }
     }
 }
 
