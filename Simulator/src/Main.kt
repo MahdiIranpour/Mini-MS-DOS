@@ -5,6 +5,7 @@ fun main() {
 
     var comm: String
     var parts: Array<String>
+
     while (true) {
 
         comm = readln()
@@ -27,6 +28,18 @@ fun main() {
 
             "EXIT" -> {
                 exit()
+            }
+
+            "HELP" -> {
+                println("CF - Create a new file => CF 'path_to_the_file'")
+                println("CFN - Change file name or format => CFN 'path_to_the_file' 'target_name/format'")
+                println("RMF - Remove file => RMF 'path_to_the_file'")
+
+                println("EXIT - Exit the terminal")
+            }
+
+            else -> {
+                println("${parts[0]} is not recognized as an internal or external command")
             }
         }
 
