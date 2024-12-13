@@ -1,6 +1,9 @@
 import java.io.File
 import kotlin.system.exitProcess
 
+
+var currentDirectory = File("C:")
+
 fun main() {
 
     var comm: String
@@ -26,9 +29,14 @@ fun main() {
                 removeFile(parts[1])
             }
 
+            "CDIR" -> { //Change current directory
+                changeDirectory(parts[1])
+            }
+
             "EXIT" -> {
                 exit()
             }
+
 
             "HELP" -> {
                 println("CF - Create a new file => CF 'path_to_the_file'")
@@ -43,6 +51,20 @@ fun main() {
             }
         }
 
+    }
+}
+
+fun changeDirectory(targetDir: String) {
+
+    val file = File(targetDir)
+
+    if (file.exists() and file.isDirectory){
+
+        currentDirectory = file
+        println("Current directory changed to $currentDirectory")
+
+    } else {
+        println("$file does not or it is not a directory")
     }
 }
 
