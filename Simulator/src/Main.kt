@@ -33,7 +33,7 @@ fun main() {
             }
 
             "CD" -> {   //work with current directory
-                if(parts.size > 1)
+                if (parts.size > 1)
                     changeDirectory(parts[1])
                 else
                     changeDirectory("")
@@ -63,7 +63,10 @@ fun main() {
             }
 
             else -> {
-                println("${parts[0]} is not recognized as an internal or external command")
+                if (comm[1] == ':')
+                    setDrive(comm)
+                else
+                    println("${parts[0]} is not recognized as an internal or external command")
             }
         }
 
@@ -71,11 +74,23 @@ fun main() {
     }
 }
 
+fun setDrive(driveName: String) {
+
+    val drives = File.listRoots()
+
+    val selectedDrive = drives.find { it.absolutePath.startsWith(driveName) }
+
+    if (selectedDrive != null) {
+        currentDirectory = selectedDrive
+    } else{
+        println("Drive not found!")
+    }
+}
 fun showCurrentDirectory() {
 
     val files = currentDirectory.listFiles()
 
-    for (file in files!!){
+    for (file in files!!) {
         printFile(file)
     }
 }
@@ -104,26 +119,24 @@ fun printFile(file: File) {
 
 fun changeDirectory(targetDir: String) {
 
-    if (targetDir == ".."){
+    if (targetDir == "..") {
         currentDirectory = currentDirectory.parentFile
         return
-    } else if (targetDir == "\\"){
+    } else if (targetDir == "\\") {
 
         val drive = currentDirectory.absolutePath.substring(0, 2) // for example D:
         currentDirectory = File("$drive/")
 
-    } else if(targetDir.isBlank()) {
+    } else if (targetDir.isBlank()) {
         println("$currentDirectory")
 
-    }else if(!targetDir.contains(":")){
+    } else if (!targetDir.contains(":")) {
 
         val file = File("$currentDirectory\\$targetDir")
 
         if (file.exists() and file.isDirectory) {
 
             currentDirectory = file
-            println("Current directory changed to $currentDirectory")
-
         } else {
             println("$file does not or it is not a directory")
         }
@@ -135,7 +148,6 @@ fun changeDirectory(targetDir: String) {
         if (file.exists() and file.isDirectory) {
 
             currentDirectory = file
-            println("Current directory changed to $currentDirectory")
 
         } else {
             println("$file does not or it is not a directory")
@@ -162,17 +174,17 @@ fun removeFile(fileName: String) {
         println("file $file does not exist")
 }
 
-fun changeFileName(current_name: String, target_name: String) {
+fun changeFileName(currentName: String, targetName: String) {
 
-    val file = File(current_name)
+    val file = File(currentName)
 
     if (file.exists().not()) {
         println("file $file does not exists")
         return
     }
 
-    if (file.renameTo(File(target_name)))
-        println("file $current_name renamed to $target_name")
+    if (file.renameTo(File(targetName)))
+        println("file $currentName renamed to $targetName")
 }
 
 fun createFile(name: String) {
