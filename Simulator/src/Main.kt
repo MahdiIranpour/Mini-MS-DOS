@@ -8,6 +8,8 @@ var currentDirectory = File("C:\\Users\\Laptopkaran")
 
 fun main() {
 
+    
+
     var comm: String
     var parts: Array<String>
 
@@ -22,6 +24,14 @@ fun main() {
 
             "ECHO." -> {   //Create file
                 createFile(parts[1])
+            }
+
+            "COPY" -> {     //copy file to path
+                copyFile(parts[1], parts[2])
+            }
+
+            "MOVE" -> {     //move file to path
+                cutFile(parts[1], parts[2])
             }
 
             "REN" -> {   //Change file name
@@ -47,19 +57,8 @@ fun main() {
                 exit()
             }
 
-
             "HELP" -> {
-                println("echo. - Create a new file => echo. 'path to the file'")
-                println("ren - Change file name or format => ren 'path to the file' 'target name/format'")
-                println("del - Remove file => del 'path_to_the_file'")
-                println("cd : for showing current directory => cd")
-                println("for change current directory to a specific folder => cd 'folder name'")
-                println("for change current directory to parent directory => cd ..")
-                println("for change current directory to absolute path => cd 'absolute path to the folder'")
-                println("back to root directory on current drive => cd \\")
-                println("'Drive name' to change current drive => E:")
-                println("dir - get List of files in current directory")
-                println("EXIT - Exit the terminal")
+                printCommandList()
             }
 
             else -> {
@@ -72,6 +71,50 @@ fun main() {
 
         println()
     }
+}
+
+fun printCommandList() {
+
+    println("echo. - Create a new file => echo. 'path to the file'")
+    println("ren - Change file name or format => ren 'path to the file' 'target name/format'")
+    println("del - Remove file => del 'path_to_the_file'")
+    println("cd : for showing current directory => cd")
+    println("for change current directory to a determined folder => cd 'folder name'")
+    println("for change current directory to parent directory => cd ..")
+    println("for change current directory to absolute path => cd 'absolute path to the folder'")
+    println("back to root directory on current drive => cd \\")
+    println("'Drive name' to change current drive => E:")
+    println("dir - get List of files in current directory")
+    println("move - move a file to a new location => move 'file name' 'path'")
+    println("copy - copy a file to a location => copy 'file name' 'path'")
+    println("EXIT - Exit the terminal")
+}
+
+fun cutFile(fileName: String, path: String) {
+
+    val file = File(fileName)
+
+    if (!file.exists()){
+        println("$file does not exist")
+        return
+    }
+
+    file.copyTo(File("$path\\$fileName"))
+    file.delete()
+    println("$file moved to $path")
+}
+
+fun copyFile(fileName: String, path: String) {
+
+    val file = File(fileName)
+
+    if (!file.exists()){
+        println("$file does not exist")
+        return
+    }
+
+    file.copyTo(File("$path\\$fileName"))
+    println("$file copied to $path")
 }
 
 fun setDrive(driveName: String) {
